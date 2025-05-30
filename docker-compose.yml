@@ -1,22 +1,18 @@
 version: '3.8'
-
 services:
   ollama:
     image: ollama/ollama
     ports:
       - "11434:11434"
     volumes:
-      - ollama_data:/root/.ollama
-    restart: always
-
-  advisor:
-    build: .
-    depends_on:
-      - ollama
-    env_file: .env
-    environment:
-      - OLLAMA_HOST=http://host.docker.internal:11434
-    command: ["python", "main.py"]
+      - ollama-data:/root/.ollama
+    entrypoint: >
+      sh -c "
+        ollama serve &
+        sleep 5 &&
+        ollama pull gemma:2b &&
+        tail -f /dev/null
+      "
 
 volumes:
-  ollama_data:
+  ollama-data:
