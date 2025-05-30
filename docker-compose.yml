@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  ollama:
+    image: ollama/ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: always
+
+  advisor:
+    build: .
+    depends_on:
+      - ollama
+    env_file: .env
+    environment:
+      - OLLAMA_HOST=http://host.docker.internal:11434
+    command: ["python", "main.py"]
+
+volumes:
+  ollama_data:
